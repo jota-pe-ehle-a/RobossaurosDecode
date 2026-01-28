@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.DECODE;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
@@ -7,9 +9,12 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathBuilder;
+import com.pedropathing.pathgen.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constantes.FConstants;
@@ -20,7 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-@Autonomous(name = "AutoAzulMaior")
+@Autonomous(name = "AzulMaior")
 public class AutoAzulMaior extends LinearOpMode {
     Follower follower;
     DcMotor motorColetor, motorColetor2, lancador;
@@ -31,38 +36,11 @@ public class AutoAzulMaior extends LinearOpMode {
     int etapaAtual = 0;
     int obelisko = 0;
 
-    Pose startPose        =  new Pose(18,123,Math.toRadians(143));
-    Pose poseDeLancamento =  new Pose(48,96,Math.toRadians(140));
-    Pose poseDeVisao      =  new Pose(51,96,Math.toRadians(60));
-    Pose poseFinal        =  new Pose(72,48,Math.toRadians(90));
-
-    Pose coleta21         =  new Pose(42,36,0);
-    Pose coleta21Final    =  new Pose(22,36,0);
-    Pose coleta21Ctrl     =  new Pose(48,36);
-
-    Pose coleta22         =  new Pose(42,60,0);
-    Pose coleta22Final    =  new Pose(22,60,0);
-    Pose coleta22Ctrl     =  new Pose(48,60);
-
-    Pose coleta23         =  new Pose(50,81,0);
-    Pose coleta23Final    =  new Pose(35,81,0);
-    Pose coleta23Ctrl     =  new Pose(48,81);
-
-    Path pathStart   =  criarLinha(startPose,poseDeLancamento);
-    Path pathOlhar   =  criarLinha(poseDeLancamento,poseDeVisao);
-    Path pathFinal   =  criarLinha(poseDeLancamento,poseFinal);
-
-    Path path21_1    =  criarCurva(poseDeLancamento,coleta21Ctrl,coleta21);
-    Path path21_2    =  criarLinha(coleta21,coleta21Final);
-    Path path21_3    =  criarCurva(coleta21Final,coleta21Ctrl,poseDeLancamento);
-
-    Path path22_1    =  criarCurva(poseDeLancamento,coleta22Ctrl,coleta22);
-    Path path22_2    =  criarLinha(coleta22,coleta22Final);
-    Path path22_3    =  criarCurva(coleta22Final,coleta22Ctrl,poseDeLancamento);
-
-    Path path23_1    =  criarLinha(poseDeLancamento,coleta23);
-    Path path23_2    =  criarLinha(coleta23,coleta23Final);
-    Path path23_3    =  criarCurva(coleta23Final,coleta23Ctrl,poseDeLancamento);
+    Pose startPose        =  new Pose(18,123,Math.toRadians(140));
+    Pose poseDeLancamento =  new Pose(48,96);
+    Pose poseFinal        =  new Pose(48,72);
+    Pose coleta23         =  new Pose(32,80);
+    Pose ctrl23           =  new Pose(54,78);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -76,91 +54,59 @@ public class AutoAzulMaior extends LinearOpMode {
         lancador      = hardwareMap.dcMotor.get("motorLancador");
         lancador.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-
-        pathStart.setLinearHeadingInterpolation(startPose.getHeading(),poseDeLancamento.getHeading());
-        pathOlhar.setLinearHeadingInterpolation(poseDeLancamento.getHeading(),poseDeVisao.getHeading());
-        pathFinal.setLinearHeadingInterpolation(poseDeLancamento.getHeading(),poseFinal.getHeading());
-
-        path21_1.setLinearHeadingInterpolation(poseDeVisao.getHeading(),0);
-        path21_2.setConstantHeadingInterpolation(0);
-        path21_3.setLinearHeadingInterpolation(0, poseDeLancamento.getHeading());
-
-        path22_1.setLinearHeadingInterpolation(poseDeLancamento.getHeading(),0);
-        path22_2.setConstantHeadingInterpolation(0);
-        path22_3.setLinearHeadingInterpolation(0, poseDeLancamento.getHeading());
-
-        path23_1.setLinearHeadingInterpolation(poseDeLancamento.getHeading(),0);
-        path23_2.setConstantHeadingInterpolation(0);
-        path23_3.setLinearHeadingInterpolation(0, poseDeLancamento.getHeading());
-
-        CameraDecode cameraDecode = new CameraDecode(hardwareMap);
+        PathChain pathStart = new PathBuilder()
+                .addPath(criarLinha(startPose,poseDeLancamento))
+                .setLinearHeadingInterpolation(Math.toRadians(140),Math.toRadians(135))
+                .build();
+        PathChain path23_1  = new PathBuilder()
+                .addPath(criarCurva(poseDeLancamento,ctrl23,coleta23))
+                .setConstantHeadingInterpolation(0)
+                .build();
+        PathChain path23_2  = new PathBuilder()
+                .addPath(criarLinha(coleta23,poseDeLancamento))
+                .setLinearHeadingInterpolation(0,Math.toRadians(135))
+                .build();
+        PathChain pathFinal = new PathBuilder()
+                .addPath(criarLinha(poseDeLancamento,poseFinal))
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .build();
 
 
         waitForStart();
+        salvarAlianca("azul");
         while (opModeIsActive() && truE){
             salvarPosicaoDoRobo(follower);
             follower.update();
             telemetryA.addData("Pose do robo(X,Y): ", follower.getPose());
             telemetryA.update();
+            voltagem = hardwareMap.voltageSensor.iterator().next().getVoltage();
             switch (etapaAtual){
                 case 0:
                     follower.followPath(pathStart);
                     if(follower.atParametricEnd()){
-                        voltagem = hardwareMap.voltageSensor.iterator().next().getVoltage();
                         lancarArtefato(calcularPotencia());
                         etapaAtual++;
                         obelisko = 23;
                     }
                     break;
                 case 1:
-                    if(obelisko == 21){
-                        follower.followPath(path21_1);
-                    } else if(obelisko == 22){
-                        follower.followPath(path22_1);
-                    } else if(obelisko == 23){
-                        follower.followPath(path23_1);
-                    }
-                    if(follower.atParametricEnd()){
-                        etapaAtual++;
-                        sleep(500);
+                    follower.followPath(path23_1);
+                    if(follower.getPose().getY() < 85){
                         coletar(false);
-                    }
-                    break;
-                case 2:
-                    if(obelisko == 21){
-                        follower.followPath(path21_2);
-                    } else if(obelisko == 22){
-                        follower.followPath(path22_2);
-                    } else if(obelisko == 23){
-                        follower.followPath(path23_2);
                     }
                     if(follower.atParametricEnd()){
                         coletar(true);
                         etapaAtual++;
                     }
                     break;
-                case 3:
-                    if(obelisko == 21){
-                        follower.followPath(path21_3);
-                        if(follower.atParametricEnd()){
-                            lancarArtefato(calcularPotencia());
-                            etapaAtual++;
-                        }
-                    } else if(obelisko == 22){
-                        follower.followPath(path22_3);
-                        if(follower.atParametricEnd()){
-                            lancarArtefato(calcularPotencia());
-                            etapaAtual++;
-                        }
-                    } else if(obelisko == 23){
-                        follower.followPath(path23_3);
-                        if(follower.atParametricEnd()){
-                            lancarArtefato(calcularPotencia());
-                            etapaAtual++;
-                        }
+                case 2:
+                    follower.followPath(path23_2);
+                    if(follower.atParametricEnd()){
+                        lancarArtefato(calcularPotencia());
+                        etapaAtual++;
                     }
                     break;
-                case 4:
+                case 3:
                     follower.followPath(pathFinal);
                     if(follower.atParametricEnd()){
                         etapaAtual = -1;
@@ -174,28 +120,29 @@ public class AutoAzulMaior extends LinearOpMode {
     }
     void lancarArtefato(double potencia){
         lancador.setPower(potencia);
-        sleep(2800);
-        motorColetor2.setPower(1);
-        motorColetor.setPower(1);
-        sleep(400);
+        sleep(3000);
+        motorColetor2.setPower(.8);
+        motorColetor.setPower(.8);
+        sleep(500);
         motorColetor.setPower(0);
         motorColetor2.setPower(0);
-        sleep(1500);
-        motorColetor2.setPower(1);
-        motorColetor.setPower(1);
         sleep(1000);
-        lancador.setPower(0);
-        motorColetor2.setPower(0);
+        motorColetor.setPower(.8);
+        motorColetor2.setPower(.8);
+        sleep(1500);
         motorColetor.setPower(0);
+        motorColetor2.setPower(0);
+        lancador.setPower(0);
     }
     void coletar(boolean parar) {
         if(!parar){
             motorColetor.setPower(1);
             motorColetor2.setPower(1);
-        } else {
+        }
+        else {
             motorColetor.setPower(0);
             motorColetor2.setPower(-0.2);
-            sleep(200);
+            sleep(500);
             motorColetor2.setPower(0);
         }
     }
@@ -213,7 +160,7 @@ public class AutoAzulMaior extends LinearOpMode {
                 )
         );
     }
-    void salvarPosicaoDoRobo(Follower follower){
+    void salvarPosicaoDoRobo(@NonNull Follower follower){
         double xAgora = follower.getPose().getX();
         double yAgora = follower.getPose().getY();
         double hAgora = follower.getPose().getHeading();
@@ -237,5 +184,23 @@ public class AutoAzulMaior extends LinearOpMode {
     }
     double calcularPotencia(){
         return 0.6*13.5/voltagem;
+    }
+    void salvarAlianca(String corDaAlianca){
+        corDaAlianca = corDaAlianca.toLowerCase();
+        String fileName = "cor_da_alianca.cvc";
+
+        File internalDir = hardwareMap.appContext.getFilesDir();
+
+        File file = new File(internalDir,fileName);
+
+        try{
+            FileWriter writer = new FileWriter(file);
+            writer.write(corDaAlianca);
+            writer.close();
+
+            telemetryA.addData("Aliança a ser salva: ",corDaAlianca);
+        } catch (IOException e){
+            telemetryA.addData("Não foi possível salvar a  aliança", "ERROR:" + e.getMessage());
+        }
     }
 }

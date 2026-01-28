@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.DECODE;
 
 
+import androidx.annotation.NonNull;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,46 +29,24 @@ public class TeleOp26 extends LinearOpMode {
 
     Follower follower;
 
-    // --- MOTORES DAS RODAS ---
-    DcMotor motorDF , motorDT, motorEF, motorET;
-
     // --- MOTORES DOS MECANISMOS ---
     private DcMotor motorColetor;
     private DcMotor motorColetor2;
     private DcMotor motorLancador;
-    private DcMotor motorSuporte;
-    private CameraDecode camera;
     private double voltagem;
 
-    String mensagemBlobVerde;
-    String areaBlobVerde;
-    String posicaoBlobVerde;
-    String mensagemBlobRoxo;
-    String areaBlobRoxo;
-    String posicaoBlobRoxo;
 
 
     @Override
     public void runOpMode() {
         // --- MAPEAMENTO DOS MOTORES ---
-        motorDF                = hardwareMap.get(DcMotor.class,"motorFD");
-        motorDT                = hardwareMap.get(DcMotor.class,"motorTD");
-        motorEF                = hardwareMap.get(DcMotor.class,"motorFE");
-        motorET                = hardwareMap.get(DcMotor.class,"motorTE");
 
         motorColetor           = hardwareMap.get(DcMotor.class, "motorCO");
         motorColetor2          = hardwareMap.get(DcMotor.class, "motorCO2");
         motorLancador          = hardwareMap.get(DcMotor.class, "motorLancador");
-        motorSuporte           = hardwareMap.get(DcMotor.class,"motorSuporte");
 
-        motorET.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorEF.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorSuporte.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorSuporte.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motorLancador.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        camera = new CameraDecode(hardwareMap);
-        voltagem = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(carregarPose());
@@ -79,24 +60,10 @@ public class TeleOp26 extends LinearOpMode {
         Path pathFinal = null;
         waitForStart();
         follower.startTeleopDrive();
-
-        try { // Boa prática para garantir que a câmera seja desligada
             while (opModeIsActive()) {
-                // --- MOVIMENTAÇÃO ---
-                double potenciaDir = -gamepad1.left_stick_y - gamepad1.left_stick_x;
-                double potenciaEsq = -gamepad1.left_stick_y + gamepad1.left_stick_x;
-
+                voltagem = hardwareMap.voltageSensor.iterator().next().getVoltage();
+                follower.setTeleOpMovementVectors(-gamepad1.left_stick_y,-gamepad1.left_stick_x,-gamepad1.right_stick_x);
                 salvarPosicaoDoRobo(follower);
-                verArtefato();
-                if(camera.getDetection() != null){
-                    telemetry.addData("Distância até o GOAL: ",camera.getDetection().ftcPose.range-31+" cm");
-                }
-                telemetry.addData("Artefato Roxo: ",mensagemBlobRoxo);
-                telemetry.addData("Área Roxo: ",areaBlobRoxo);
-                telemetry.addData("Posição Roxo: ",posicaoBlobRoxo);
-                telemetry.addData("Artefato Verde: ",mensagemBlobVerde);
-                telemetry.addData("Área Verde: ",areaBlobVerde);
-                telemetry.addData("Posição verde: ",posicaoBlobVerde);
                 telemetry.update();
                 follower.update();
                 if(gamepad1.a && !fezEndGame && estaEntre(new Pose(48,0),new Pose(96,36))){
@@ -106,7 +73,7 @@ public class TeleOp26 extends LinearOpMode {
                                     follower.getPose(), endGamePoseAzul
                             )
                     );
-                    pathFinal.setLinearHeadingInterpolation(follower.getPose().getHeading(), endGamePoseAzul.getHeading());
+                    pathFinal.setConstantHeadingInterpolation(Math.toRadians(90));
                 }
                 else if(gamepad1.b && !fezEndGame && estaEntre(new Pose(48,0),new Pose(96,36))){
                     fezEndGame = true;
@@ -115,7 +82,7 @@ public class TeleOp26 extends LinearOpMode {
                                     follower.getPose(), endGamePoseVermeho
                             )
                     );
-                    pathFinal.setLinearHeadingInterpolation(follower.getPose().getHeading(), endGamePoseVermeho.getHeading());
+                    pathFinal.setConstantHeadingInterpolation(Math.toRadians(90));
                 }
                 else if(pathFinal != null && !acabouEndGame){
                     follower.followPath(pathFinal);
@@ -124,49 +91,37 @@ public class TeleOp26 extends LinearOpMode {
                         follower.startTeleopDrive();
                         acabouEndGame = true;
                         fezEndGame = false;
-                    }
-                }
-                else if(gamepad1.x && poseAjustada() != null){
-                    follower.followPath(new Path(
-                            new BezierLine(
-                                    follower.getPose(),poseAjustada()
-                            )
-                    ));
-                    if(follower.atParametricEnd()){
-                        follower.breakFollowing();
-                        follower.startTeleopDrive();
+                        pathFinal = null;
                     }
                 }
                 // ====================================================================
                 // ========= CONTROLE DOS EFETUADORES (gamepad2) =========
                 // ====================================================================
                 // (Seu código de controle dos mecanismos, que está correto)
-                motorColetor.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+                motorColetor.setPower((gamepad2.right_trigger-gamepad2.left_trigger)*0.7);
                 if (gamepad2.right_bumper && !gamepad2.left_bumper) {
                     motorColetor2.setPower(1);
-                } else if(gamepad2.left_bumper && !gamepad2.right_bumper){
+                }
+                else if(gamepad2.left_bumper && !gamepad2.right_bumper){
                     motorColetor2.setPower(-1);
-                } else if(!gamepad2.right_bumper && !gamepad2.left_bumper){
+                }
+                else if(!gamepad2.right_bumper && !gamepad2.left_bumper){
                     motorColetor2.setPower(0);
                 }
-                if (gamepad2.x) {
-                    lancarArtefato(.5);
-                } else if (gamepad2.y) {
-                    lancarArtefato(.6);
-                } else if (gamepad2.b) {
+                else if (gamepad2.x) {
+                    lancarArtefato(.55);
+                }
+                else if (gamepad2.y) {
                     lancarArtefato(.7);
-                } else {
+                }
+                else if (gamepad2.b) {
+                    lancarArtefato(.85);
+                }
+                else {
                     motorLancador.setPower(0);
-                    motorSuporte.setPower(0);
-
                 }
             }
-        } finally  {
-            // Garante que a câmera seja desligada ao final.
-            if (camera != null) {
-                camera.close();
-            }
-        }
+
     }
     Pose carregarPose(){
         String fileName = "current_robot_position.cvc";
@@ -190,27 +145,7 @@ public class TeleOp26 extends LinearOpMode {
         }
         return new Pose(0,0,0);
     }
-    void verArtefato(){
-        if(camera.blobRoxo() != null){
-            mensagemBlobRoxo = "Detectado";
-            areaBlobRoxo = String.valueOf(camera.blobRoxo().getContourArea());
-            posicaoBlobRoxo = String.valueOf(camera.blobRoxo().getBoxFit().center);
-        } else if(camera.blobRoxo() == null){
-            mensagemBlobRoxo = "Não detectado";
-            areaBlobRoxo = "Indefinida";
-            posicaoBlobRoxo = "Indefinida";
-        }
-        if(camera.blobVerde() != null){
-            mensagemBlobVerde = "Detectado";
-            areaBlobVerde = String.valueOf(camera.blobVerde().getContourArea());
-            posicaoBlobVerde = String.valueOf(camera.blobVerde().getBoxFit().center);
-        } else if(camera.blobVerde() == null){
-            mensagemBlobVerde = "Não detectado";
-            areaBlobVerde = "Indefinida";
-            posicaoBlobVerde = "Indefinida";
-        }
-    }
-    boolean estaEntre(Pose ponto1, Pose ponto2){
+    boolean estaEntre(@NonNull Pose ponto1, Pose ponto2){
         boolean Xverdadeiro = false;
         boolean Yverdadeiro = false;
         if(follower.getPose().getX() > ponto1.getX() && follower.getPose().getX() < ponto2.getX()){
@@ -221,7 +156,7 @@ public class TeleOp26 extends LinearOpMode {
         }
         return Xverdadeiro && Yverdadeiro;
     }
-    void salvarPosicaoDoRobo(Follower follower){
+    void salvarPosicaoDoRobo(@NonNull Follower follower){
         double xAgora = follower.getPose().getX();
         double yAgora = follower.getPose().getY();
         double hAgora = follower.getPose().getHeading();
@@ -243,17 +178,7 @@ public class TeleOp26 extends LinearOpMode {
             telemetry.addData("Não foi possível salvar a pose do robô","ERROR:" + e.getMessage());
         }
     }
-    Pose poseAjustada(){
-        AprilTagDetection detection = camera.getDetection();
-        if (detection != null && (detection.id == 20 || detection.id == 24)) {
-            double novoAngulo = follower.getPose().getHeading() + Math.toRadians(detection.ftcPose.bearing);
-            return new Pose(follower.getPose().getX()+0.01,follower.getPose().getY()+0.01, novoAngulo);
-        } else {
-            return null;
-        }
-    }
     void lancarArtefato(double potencia){
         motorLancador.setPower(potencia*(13.5/voltagem));
-        motorSuporte.setPower(potencia*(13.5/voltagem));
     }
 }
