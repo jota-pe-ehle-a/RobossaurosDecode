@@ -39,7 +39,7 @@ public class AutoAzulMaior extends LinearOpMode {
     Pose startPose        =  new Pose(18,123,Math.toRadians(140));
     Pose poseDeLancamento =  new Pose(48,96);
     Pose poseFinal        =  new Pose(48,72);
-    Pose coleta23         =  new Pose(32,80);
+    Pose coleta23         =  new Pose(30,80);
     Pose ctrl23           =  new Pose(54,78);
 
     @Override

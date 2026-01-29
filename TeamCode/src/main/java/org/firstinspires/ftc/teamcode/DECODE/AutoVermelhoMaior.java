@@ -39,7 +39,7 @@ public class AutoVermelhoMaior extends LinearOpMode {
     Pose startPose        =  new Pose(126,123,Math.toRadians(40));
     Pose poseDeLancamento =  new Pose(96,96);
     Pose poseFinal        =  new Pose(96,72);
-    Pose coleta23         =  new Pose(119,81);
+    Pose coleta23         =  new Pose(114,81);
     Pose ctrl23           =  new Pose(90,78);
 
     @Override
