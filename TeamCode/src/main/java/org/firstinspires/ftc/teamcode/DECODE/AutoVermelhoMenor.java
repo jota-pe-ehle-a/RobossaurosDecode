@@ -30,7 +30,7 @@ public class AutoVermelhoMenor extends LinearOpMode {
     double voltagem;
 
     Pose startPose           =   new Pose(80, 10,Math.toRadians(90));
-    Pose poseDeLancamento    =   new Pose(86,20);
+    Pose poseDeLancamento    =   new Pose(86,13);
     Pose poseFinal           =   new Pose(96,30,Math.toRadians(90));
 
     Pose coleta21Final       =   new Pose(119,34);

@@ -46,6 +46,7 @@ public class AutoAzulMenor extends LinearOpMode {
         motorColetor2 = hardwareMap.dcMotor.get("motorCO2");
         lancador      = hardwareMap.dcMotor.get("motorLancador");
         lancador.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lancador.setDirection(DcMotorSimple.Direction.REVERSE);
 
         PathChain path21_1  = new PathBuilder()
                 .addPath(criarCurva(poseDeLancamento,coleta21Ctrl,coleta21Final))

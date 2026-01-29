@@ -53,6 +53,7 @@ public class AutoAzulMaior extends LinearOpMode {
         motorColetor2 = hardwareMap.dcMotor.get("motorCO2");
         lancador      = hardwareMap.dcMotor.get("motorLancador");
         lancador.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lancador.setDirection(DcMotorSimple.Direction.REVERSE);
 
         PathChain pathStart = new PathBuilder()
                 .addPath(criarLinha(startPose,poseDeLancamento))

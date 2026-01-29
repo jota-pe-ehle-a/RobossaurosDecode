@@ -46,6 +46,7 @@ public class TeleOp26 extends LinearOpMode {
         motorLancador          = hardwareMap.get(DcMotor.class, "motorLancador");
 
         motorLancador.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motorLancador.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);

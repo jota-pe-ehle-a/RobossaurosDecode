@@ -11,6 +11,7 @@ import com.pedropathing.pathgen.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Constantes.FConstants;
 import org.firstinspires.ftc.teamcode.Constantes.LConstants;
@@ -38,6 +39,7 @@ public class AutoVermelhoEstacionario extends LinearOpMode {
         lancador = hardwareMap.dcMotor.get("motorLancador");
         coletor = hardwareMap.dcMotor.get("motorCO");
         coletor2 = hardwareMap.dcMotor.get("motorCO2");
+        lancador.setDirection(DcMotorSimple.Direction.REVERSE);
         PathChain pathStart = new PathBuilder()
                 .addPath(criarLinha(startPose,poseDeLancamento))
                 .setLinearHeadingInterpolation(Math.toRadians(90),Math.toRadians(64))
