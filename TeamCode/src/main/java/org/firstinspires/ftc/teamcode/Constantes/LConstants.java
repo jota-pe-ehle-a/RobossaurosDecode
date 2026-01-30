@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Constantes;
 
 import com.pedropathing.localization.Encoder;
 import com.pedropathing.localization.constants.ThreeWheelIMUConstants;
-import com.pedropathing.localization.constants.TwoWheelConstants;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 public class LConstants {
