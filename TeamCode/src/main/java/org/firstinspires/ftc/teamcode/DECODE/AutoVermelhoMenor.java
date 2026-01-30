@@ -28,12 +28,12 @@ public class AutoVermelhoMenor extends LinearOpMode {
     int etapaAtual = 0;
     double voltagem;
 
-    Pose startPose           =   new Pose(80, 7.72,Math.toRadians(90));
+    Pose startPose           =   new Pose(80, 8,Math.toRadians(90));
     Pose poseDeLancamento    =   new Pose(86,13);
     Pose poseFinal           =   new Pose(96,30,Math.toRadians(90));
 
-    Pose coleta21Final       =   new Pose(119,34);
-    Pose coleta21Ctrl        =   new Pose(86,35);
+    Pose coleta21Final       =   new Pose(119,36);
+    Pose coleta21Ctrl        =   new Pose(86,36);
 
     @Override
     public void runOpMode() throws InterruptedException {

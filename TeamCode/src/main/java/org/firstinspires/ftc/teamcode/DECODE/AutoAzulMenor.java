@@ -29,12 +29,12 @@ public class AutoAzulMenor extends LinearOpMode {
     int     etapaAtual  =  0;
     double  voltagem    =  0;
 
-    Pose startPose           =   new Pose(64, 7.72,Math.toRadians(90));
+    Pose startPose           =   new Pose(64, 8,Math.toRadians(90));
     Pose poseDeLancamento    =   new Pose(58,13);
     Pose poseFinal           =   new Pose(48,30,Math.toRadians(90));
 
-    Pose coleta21Final       =   new Pose(32,34,0);
-    Pose coleta21Ctrl        =   new Pose(58,35);
+    Pose coleta21Final       =   new Pose(32,36,0);
+    Pose coleta21Ctrl        =   new Pose(58,36);
 
     @Override
     public void runOpMode() throws InterruptedException {
