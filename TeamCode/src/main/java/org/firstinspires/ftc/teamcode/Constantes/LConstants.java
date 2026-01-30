@@ -11,7 +11,7 @@ public class LConstants {
         ThreeWheelIMUConstants.turnTicksToInches = .002965;
         ThreeWheelIMUConstants.leftY = 4.25;
         ThreeWheelIMUConstants.rightY = -4.25;
-        ThreeWheelIMUConstants.strafeX = 1.25;
+        ThreeWheelIMUConstants.strafeX = 3.53;
         ThreeWheelIMUConstants.leftEncoder_HardwareMapName = "motorFD"; // ctrlHub 01
         ThreeWheelIMUConstants.rightEncoder_HardwareMapName = "motorTE"; // ctrlHub 02
         ThreeWheelIMUConstants.strafeEncoder_HardwareMapName = "motorTD"; // ctrlHub 03

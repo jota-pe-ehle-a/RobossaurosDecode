@@ -29,7 +29,7 @@ public class AutoVermelhoEstacionario extends LinearOpMode {
     int etapaAtual   = 0;
     double voltagem  = 0;
 
-    Pose startPose           =   new Pose(80, 8,Math.toRadians(90));
+    Pose startPose           =   new Pose(80, 7.72,Math.toRadians(90));
     Pose poseDeLancamento    =   new Pose(86,13);
     Pose poseFinal           =   new Pose(114,15);
     @Override

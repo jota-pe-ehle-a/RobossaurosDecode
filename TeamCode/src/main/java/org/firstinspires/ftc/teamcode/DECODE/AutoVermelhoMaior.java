@@ -36,7 +36,7 @@ public class AutoVermelhoMaior extends LinearOpMode {
     int etapaAtual = 0;
     int obelisko = 0;
 
-    Pose startPose        =  new Pose(124,121,Math.toRadians(40));
+    Pose startPose        =  new Pose(122.26,121.54,Math.toRadians(40));
     Pose poseDeLancamento =  new Pose(96,96);
     Pose poseFinal        =  new Pose(96,72);
     Pose coleta23         =  new Pose(114,81);
