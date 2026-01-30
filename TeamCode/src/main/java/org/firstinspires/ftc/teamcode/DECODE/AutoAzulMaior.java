@@ -36,7 +36,7 @@ public class AutoAzulMaior extends LinearOpMode {
     int etapaAtual = 0;
     int obelisko = 0;
 
-    Pose startPose        =  new Pose(18,123,Math.toRadians(140));
+    Pose startPose        =  new Pose(20,121,Math.toRadians(140));
     Pose poseDeLancamento =  new Pose(48,96);
     Pose poseFinal        =  new Pose(48,72);
     Pose coleta23         =  new Pose(30,80);
@@ -184,7 +184,7 @@ public class AutoAzulMaior extends LinearOpMode {
         }
     }
     double calcularPotencia(){
-        return 0.6*13.5/voltagem;
+        return 0.7*13.5/voltagem;
     }
     void salvarAlianca(String corDaAlianca){
         corDaAlianca = corDaAlianca.toLowerCase();

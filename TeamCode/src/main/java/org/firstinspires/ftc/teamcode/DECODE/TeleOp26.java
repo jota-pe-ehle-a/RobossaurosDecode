@@ -54,11 +54,6 @@ public class TeleOp26 extends LinearOpMode {
 
         telemetry.addData("Status", "Robô Pronto!");
         telemetry.update();
-        boolean fezEndGame = false;
-        boolean acabouEndGame = false;
-        Pose endGamePoseAzul = new Pose(105,36,Math.toRadians(90));
-        Pose endGamePoseVermeho = new Pose(39,36,Math.toRadians(90));
-        Path pathFinal = null;
         waitForStart();
         follower.startTeleopDrive();
             while (opModeIsActive()) {
@@ -67,34 +62,6 @@ public class TeleOp26 extends LinearOpMode {
                 salvarPosicaoDoRobo(follower);
                 telemetry.update();
                 follower.update();
-                if(gamepad1.a && !fezEndGame && estaEntre(new Pose(48,0),new Pose(96,36))){
-                    fezEndGame = true;
-                    pathFinal = new Path(
-                            new BezierLine(
-                                    follower.getPose(), endGamePoseAzul
-                            )
-                    );
-                    pathFinal.setConstantHeadingInterpolation(Math.toRadians(90));
-                }
-                else if(gamepad1.b && !fezEndGame && estaEntre(new Pose(48,0),new Pose(96,36))){
-                    fezEndGame = true;
-                    pathFinal = new Path(
-                            new BezierLine(
-                                    follower.getPose(), endGamePoseVermeho
-                            )
-                    );
-                    pathFinal.setConstantHeadingInterpolation(Math.toRadians(90));
-                }
-                else if(pathFinal != null && !acabouEndGame){
-                    follower.followPath(pathFinal);
-                    if(follower.atParametricEnd()){
-                        follower.breakFollowing();
-                        follower.startTeleopDrive();
-                        acabouEndGame = true;
-                        fezEndGame = false;
-                        pathFinal = null;
-                    }
-                }
                 // ====================================================================
                 // ========= CONTROLE DOS EFETUADORES (gamepad2) =========
                 // ====================================================================
@@ -106,11 +73,11 @@ public class TeleOp26 extends LinearOpMode {
                 else if(gamepad2.left_bumper && !gamepad2.right_bumper){
                     motorColetor2.setPower(-1);
                 }
-                else if(!gamepad2.right_bumper && !gamepad2.left_bumper){
+                else if((!gamepad2.right_bumper && !gamepad2.left_bumper)||(gamepad2.right_bumper && gamepad2.left_bumper)){
                     motorColetor2.setPower(0);
                 }
-                else if (gamepad2.x) {
-                    lancarArtefato(.55);
+                if (gamepad2.x) {
+                    lancarArtefato(.6);
                 }
                 else if (gamepad2.y) {
                     lancarArtefato(.7);

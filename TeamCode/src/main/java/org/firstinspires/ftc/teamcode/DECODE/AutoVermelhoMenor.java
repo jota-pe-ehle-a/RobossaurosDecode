@@ -29,7 +29,7 @@ public class AutoVermelhoMenor extends LinearOpMode {
     int etapaAtual = 0;
     double voltagem;
 
-    Pose startPose           =   new Pose(80, 10,Math.toRadians(90));
+    Pose startPose           =   new Pose(80, 8,Math.toRadians(90));
     Pose poseDeLancamento    =   new Pose(86,13);
     Pose poseFinal           =   new Pose(96,30,Math.toRadians(90));
 
@@ -76,7 +76,8 @@ public class AutoVermelhoMenor extends LinearOpMode {
                 case 0:
                     follower.followPath(pathStart);
                     if(follower.atParametricEnd()){
-                        lancarArtefato(calcularPotencia());
+                        lancador.setPower(calcularPotencia());
+                        lancarArtefato();
                         etapaAtual++;
                     }
                     break;
@@ -96,7 +97,6 @@ public class AutoVermelhoMenor extends LinearOpMode {
                         lancador.setPower(calcularPotencia());
                     }
                     if(follower.atParametricEnd()){
-                        lancarArtefato(calcularPotencia());
                         etapaAtual++;
                     }
                     break;
@@ -113,7 +113,7 @@ public class AutoVermelhoMenor extends LinearOpMode {
         }
 
     }
-    void lancarArtefato(double potencia){
+    void lancarArtefato(){
         motorColetor2.setPower(.8);
         motorColetor.setPower(.8);
         sleep(500);
